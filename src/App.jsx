@@ -4,12 +4,15 @@ import Prompt from "./modules/Prompt";
 import { validateCommandRepeat } from './utils/Command'
 import { ubuntuLogo } from "./utils/Texts";
 
+import './index.css';
+
 function App() {
   const [commandHistory, setCommandHistory] = createSignal([])
   const [oldCommands, setOldCommands] = createSignal([])
   const [historyPointer, setHistoryPointer] = createSignal(-1)
-  const [startupLogo, setStartupLogo] = createSignal(true)
   const [commandCount, setCommandCount] = createSignal(0)
+  const [startupLogo, setStartupLogo] = createSignal(true)
+  const [crt, setCrt] = createSignal(false)
   let inputCommand
 
   function scroll() {
@@ -100,7 +103,7 @@ function App() {
   }
 
   return (
-    <div class='w-full h-screen overflow-y-auto bg-background p-4 text-lg'>
+    <div class={(crt() ? "crt " : " ") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       <div class='scrollbar-hide w-full h-full font-mono leading-5 overflow-y-scroll selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4'>
         <Show when={startupLogo()}>
           <pre>{ubuntuLogo}</pre>

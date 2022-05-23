@@ -3,7 +3,7 @@ const commandList = {
         "info": "Display all commands available",
         "exec": (c) => <div className="min-h-fit flex flex-col items-start">
             <For each={Object.keys(commandList)} fallback={<></>}>
-                {i => (<div className="flex flex-row min-w-fit"><p className="w-[10rem]">{i}</p><p>{commandList[i].info}</p></div>)}
+                {i => (<div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{i}</p><p>{commandList[i].info}</p></div>)}
             </For>
         </div>
     },
@@ -51,7 +51,7 @@ export function validateCommand(c) {
     return Object.keys(commandList).includes(c)
 }
 
-export function validateCommandRepeat(c){
+export function validateCommandRepeat(c) {
     return /![\d]+/gm.test(c.text)
 }
 
