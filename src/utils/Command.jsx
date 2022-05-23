@@ -1,4 +1,4 @@
-const commandList = {
+export const commandList = {
     "help": {
         "info": "Display all commands available",
         "exec": (c) => <div className="min-h-fit flex flex-col items-start">
@@ -13,7 +13,7 @@ const commandList = {
     },
     "sudo": {
         "info": "Grants root access",
-        "exec": (c) => <p>Not so fast =)</p>
+        "exec": (c) => <></>
     },
     "info": {
         "info": "Gives general information",
@@ -31,6 +31,18 @@ const commandList = {
         "info": "Gives info about special commands",
         "exec": (c) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
     },
+    "exit": {
+        "info": "Exit current situation",
+        "exec": exit,
+    },
+    "man": {
+        "info": "Show info about specific command",
+        "exec": man,
+    },
+    "crt": {
+        "info": "Surprise (need sudo)",
+        "exec": crt,
+    },
     "history": {
         "info": "Show past commands",
         "exec": (c) => c.hasOwnProperty("history") ? <div>
@@ -43,23 +55,40 @@ const commandList = {
 }
 
 export const styleComm = {
-    "validateStyle": (command) => validateCommand(command) ? " text-green " : " text-red ",
+    "validateStyle": (command) => hasProblem(command) == "" ? " text-green " : " text-red ",
     "code": " text-orange "
 }
 
-export function validateCommand(c) {
-    return Object.keys(commandList).includes(c)
+export function hasProblem(c) {
+    if (!Object.keys(commandList).includes(c.command))
+        return "notExists"
+    if (c.options.unable)
+        return "unable"
+    if (c.options.needRoot && !c.options.root)
+        return "missingPerm"
+    return ""
 }
 
 export function validateCommandRepeat(c) {
     return /![\d]+/gm.test(c.text)
 }
 
-export function execCommand(c) {
-    if (validateCommand(c.command))
+export function execCommand(c, options = null) {
+    let validation = hasProblem(c)
+    if (validation == "")
         return commandList[c.command].exec(c)
     else
-        return notCommand(c)
+        switch (validation) {
+            case "notExists":
+                return notCommand(c)
+            case "unable":
+                return unableCommand(c)
+            case "missingPerm":
+                return missingPermsCommand(c)
+
+            default:
+                return missingPermsCommand(c)
+        }
 }
 
 function echo(c) {
@@ -68,6 +97,31 @@ function echo(c) {
     return <p>No arguments given</p>
 }
 
+function exit(c) {
+    if (c.hasOwnProperty("wasSudo") && c.wasSudo)
+        return <p>Exiting sudo!</p>
+    else
+        return <p>Nothing to exit!</p>
+}
+
+function man(c) {
+    if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>man {"<command>"}</span></p>
+    if (Object.keys(commandList).includes(c.args[0])) return <div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{c.args[0]}</p><p>{commandList[c.args[0]].info}</p></div>
+    else return <p>Command <span className={styleComm.code}>{c.args[0]}</span> does not exits</p>
+}
+
+function crt(c) {
+    if (c.hasOwnProperty("wasCrt") && c.wasCrt) return <p>Awww...</p>
+    return <p>Nice!</p>
+}
+
 function notCommand(c) {
-    return <p>Command <span className={styleComm.code}>{c.text}</span>{c} does not exists</p>
+    return <p>Command <span className={styleComm.code}>{c.text}</span> does not exists</p>
+}
+function unableCommand(c) {
+    return <p>Can't run <span className={styleComm.code}>{c.text}</span> at the moment</p>
+}
+
+function missingPermsCommand(c) {
+    return <p>Insufficent permission to run <span className={styleComm.code}>{c.text}</span></p>
 }

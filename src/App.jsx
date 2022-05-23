@@ -1,22 +1,56 @@
 import { createEffect, createSignal, onMount, Show } from "solid-js";
 import PastCommands from "./modules/PastCommands";
 import Prompt from "./modules/Prompt";
-import { validateCommandRepeat } from './utils/Command'
+import { commandList, execCommand, hasProblem, validateCommandRepeat } from './utils/Command'
 import { ubuntuLogo } from "./utils/Texts";
 
 import './index.css';
+import { stringify } from "postcss";
 
 function App() {
   const [commandHistory, setCommandHistory] = createSignal([])
   const [oldCommands, setOldCommands] = createSignal([])
+  const [possiblesTabCompl, setPossiblesTabCompl] = createSignal([])
   const [historyPointer, setHistoryPointer] = createSignal(-1)
   const [commandCount, setCommandCount] = createSignal(0)
+
+  const [user, setUser] = createSignal("guest")
+
   const [startupLogo, setStartupLogo] = createSignal(true)
   const [crt, setCrt] = createSignal(false)
+  const [sudoRoutine, setSudoRoutine] = createSignal(false)
+  const [wrongPass, setWrongPass] = createSignal(false)
+
   let inputCommand
+  let passwordInput
 
   function scroll() {
     document.getElementById("inView").scrollIntoView({ behavior: "auto" })
+  }
+
+  function passwordSubmit(event) {
+    event.preventDefault()
+    if (passwordInput.value != "passwd") {
+      setWrongPass(true)
+      scroll()
+      setTimeout(() => {
+        setOldCommands([])
+        setSudoRoutine(false)
+        passwordInput.value = ""
+        inputCommand.value = ""
+        setUser("guest")
+        setWrongPass(false)
+      }, 2000);
+    }
+    else {
+      setOldCommands([])
+      setCommandHistory([])
+      setCommandCount(0)
+      setUser("root")
+      passwordInput.value = ""
+      inputCommand.value = ""
+      setSudoRoutine(false)
+    }
   }
 
   function commandSubmit(event) {
@@ -27,6 +61,7 @@ function App() {
     command.command = words[0]
     words.shift()
     command.args = [...words]
+    command.options = {}
     if (validateCommandRepeat(command)) {
       let position = command.command.slice(1)
       command = { ...commandHistory()[parseInt(position)] }
@@ -37,27 +72,87 @@ function App() {
     setCommandHistory(updatedHistory)
     setHistoryPointer(updatedHistory.length - 1)
 
+    if (command.command == "sudo") {
+      if (user() == "root") {
+        command.options = { "unable": true }
+      }
+      else {
+        setSudoRoutine(true)
+      }
+    }
+
     if (command.command == "history") command.history = [...commandHistory()]
+    if (command.command == "exit") {
+      command.wasSudo = user() == "root"
+      if (user() == "root") {
+        setTimeout(() => {
+          setUser("guest")
+          setOldCommands([])
+        }, 1000);
+      }
+    }
+    if (command.command == "crt") {
+      command.options = { "needRoot": true, "root": (user() == "root") }
+      command.wasCrt = crt()
+      if (user() == "root") {
+        setCrt(() => !crt())
+      }
+    }
 
     let updateOldCom = [...oldCommands(), command]
     setOldCommands(updateOldCom)
 
     if (command.command == "clear") setOldCommands([])
 
+
     setCommandCount(commandCount() + 1)
     inputCommand.value = ""
+    setPossiblesTabCompl([])
 
     scroll()
   }
 
   onMount(() => {
-    document.body.addEventListener("click", () => document.getElementById("commandInput").focus())
+    document.body.addEventListener("click", () => {
+      let commandInEl = document.getElementById("commandInput")
+      let passwdInEl = document.getElementById("passwordInput")
+      commandInEl && commandInEl.focus()
+      passwdInEl && passwdInEl.focus()
+    })
     addEvent(document, "keydown", (e) => {
       e = e || window.event;
       e.Handled = true
+      if (e.keyCode == 9) tabComplete(e)
       if (e.keyCode == 38 || e.keyCode == 40) historyNavigate(e)
     })
   })
+
+  createEffect(() => {
+    if (sudoRoutine()) {
+      let passwdInEl = document.getElementById("passwordInput")
+      passwdInEl && passwdInEl.focus()
+    }
+    else {
+      let commandInEl = document.getElementById("commandInput")
+      commandInEl && commandInEl.focus()
+    }
+  })
+
+  function tabComplete(e) {
+    e.preventDefault()
+    if (sudoRoutine()) return
+    let possibles = []
+    Object.keys(commandList).forEach(comm => {
+      if (inputCommand.value == comm.slice(0, inputCommand.value.length))
+        possibles.push(comm)
+    });
+    if (possibles.length == 1) {
+      inputCommand.value = possibles[0]
+      setPossiblesTabCompl([])
+      return
+    }
+    setPossiblesTabCompl(possibles)
+  }
 
   function historyNavigate(e) {
     e.preventDefault()
@@ -71,15 +166,12 @@ function App() {
         }
         break;
       case 40:
-        console.log("we")
         if (historyPointer() == -1) return
         if (historyPointer() == commandHistory().length - 1) {
           inputCommand.value = ""
           return
         }
         if (historyPointer() < commandHistory().length + 1) {
-
-          console.log("ciao")
           setHistoryPointer(historyPointer() + 1)
         }
         inputCommand.value = commandHistory()[historyPointer()].text
@@ -109,23 +201,54 @@ function App() {
           <pre>{ubuntuLogo}</pre>
         </Show>
         <Show when={commandHistory().length > 0}>
-          <PastCommands oldCommands={oldCommands} />
+          <PastCommands user={user} oldCommands={oldCommands} />
         </Show>
-        <form onSubmit={commandSubmit}>
-          <div className="w-full min-h-fit flex flex-row items-center justify-start gap-2">
-            <Prompt />
-            <input
-              id="commandInput"
-              type="text"
-              ref={inputCommand}
-              autoFocus={true}
-              autocomplete="off"
-              spellCheck="false"
-              className="w-full min-h-fit border-none outline-none bg-transparent font-bold"
-            />
-          </div>
-          <input type="submit" value="" />
-        </form>
+        {
+          sudoRoutine() ?
+            <div>
+              <form onSubmit={passwordSubmit}>
+                <div className="w-full min-h-fit flex flex-row items-center justify-start gap-2">
+                  <p>password:</p>
+                  <input
+                    id="passwordInput"
+                    type="password"
+                    ref={passwordInput}
+                    autoFocus={true}
+                    autocomplete="off"
+                    spellCheck="false"
+                    className="w-full min-h-fit border-none outline-none bg-transparent font-bold"
+                  />
+                </div>
+                <input type="submit" value="" />
+              </form>
+              <Show when={wrongPass()}><p>Wrong password, redirecting...</p></Show>
+            </div>
+            :
+            <div>
+              <form onSubmit={commandSubmit}>
+                <div className="w-full min-h-fit flex flex-row items-center justify-start gap-2">
+                  <Prompt user={user} />
+                  <input
+                    id="commandInput"
+                    type="text"
+                    ref={inputCommand}
+                    autoFocus={true}
+                    autocomplete="off"
+                    spellCheck="false"
+                    className="w-full min-h-fit border-none outline-none bg-transparent font-bold"
+                  />
+                </div>
+                <input type="submit" value="" />
+              </form>
+              <Show when={possiblesTabCompl().length > 0}>
+                <div className="flex flex-row gap-8 min-w-fit min-h-fit">
+                  <For each={possiblesTabCompl()} fallback={<></>}>
+                    {i => <p>{i}</p>}
+                  </For>
+                </div>
+              </Show>
+            </div>
+        }
         <div id="inView"></div>
       </div>
     </div >

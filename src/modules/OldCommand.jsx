@@ -1,13 +1,13 @@
-import { execCommand, styleComm, validateCommand } from "../utils/Command";
+import { execCommand, styleComm } from "../utils/Command";
 import Prompt from "./Prompt";
 
-function OldCommand({ command }) {
+function OldCommand({ command, user }) {
     return (
         <div className="w-full min-h-fit flex flex-col items-start justify-start">
             <div className="w-full min-h-fit flex flex-row gap-2">
-                <Prompt />
+                <Prompt user={user} />
                 <div>
-                <p className={styleComm.validateStyle(command.command) + " font-bold"}>{command.text}</p>
+                <p className={styleComm.validateStyle(command) + " font-bold"}>{command.text}</p>
                 </div>
             </div>
             <div className="pl-2 ">{execCommand(command)}</div>
