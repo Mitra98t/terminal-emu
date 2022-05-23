@@ -3,7 +3,7 @@ const commandList = {
         "info": "Display all commands available",
         "exec": (c) => <div className="min-h-fit flex flex-col items-start">
             <For each={Object.keys(commandList)} fallback={<></>}>
-                {i => <div className="grid grid-cols-2"><p className="w-[20rem]">{i}</p><p>{commandList[i].info}</p></div>}
+                {i => (<div className="flex flex-row min-w-fit"><p className="w-[10rem]">{i}</p><p>{commandList[i].info}</p></div>)}
             </For>
         </div>
     },
@@ -19,6 +19,19 @@ const commandList = {
         "info": "Gives general information",
         "exec": (c) => <p>Site made for fun</p>
     },
+    "clear": {
+        "info": "Clears terminal",
+        "exec": (c) => <></>
+    },
+    "history": {
+        "info": "Show past commands",
+        "exec": (c) => c.hasOwnProperty("history") ? <div>
+            <For className="" each={c.history} fallback={<p>No past commands given</p>}>
+                {i => <p>{i}</p>}
+            </For>
+        </div> :
+            <></>
+    }
 }
 
 export const styleComm = {
@@ -30,8 +43,8 @@ export function validateCommand(c) {
 }
 
 export function execCommand(c) {
-    if (validateCommand(c))
-        return commandList[c].exec(c)
+    if (validateCommand(c.command))
+        return commandList[c.command].exec(c)
     else
         return notCommand(c)
 }
