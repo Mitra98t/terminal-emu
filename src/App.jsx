@@ -92,7 +92,7 @@ function App() {
         <form onSubmit={commandSubmit}>
           <div className="w-full min-h-fit flex flex-row items-center justify-start gap-2">
             <Prompt />
-            <input id="commandInput" type="text" ref={inputCommand} autoFocus={true} autocomplete="off" className="border-none outline-none bg-transparent font-bold" />
+            <input id="commandInput" type="text" ref={inputCommand} autoFocus={true} autocomplete="off" spellCheck="false" className="border-none outline-none bg-transparent font-bold" />
           </div>
           <input type="submit" value="" />
         </form>
