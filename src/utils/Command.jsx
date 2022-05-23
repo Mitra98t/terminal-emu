@@ -1,4 +1,12 @@
 const commandList = {
+    "help": {
+        "info": "Display all commands available",
+        "exec": (c) => <div className="min-h-fit flex flex-col items-start">
+            <For each={Object.keys(commandList)} fallback={<></>}>
+                {i => <div className="grid grid-cols-2"><p className="w-[20rem]">{i}</p><p>{commandList[i].info}</p></div>}
+            </For>
+        </div>
+    },
     "whoami": {
         "info": "A silly question dont you think?",
         "exec": (c) => <p>"The fundamental question"</p>
@@ -11,14 +19,6 @@ const commandList = {
         "info": "Gives general information",
         "exec": (c) => <p>Site made for fun</p>
     },
-    "help": {
-        "info": "Display all commands available",
-        "exec": (c) => <div className="min-h-fit flex flex-col items-start">
-            <For each={Object.keys(commandList)} fallback={<></>}>
-                {i => <div className="grid grid-cols-2"><p className="w-[20rem]">{i}</p><p>{commandList[i].info}</p></div>}
-            </For>
-        </div>
-    }
 }
 
 export const styleComm = {
