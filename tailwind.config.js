@@ -6,16 +6,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "background": "#3f3f3f",
-        "black": "#1e2320",
-        "white": "#dcdccc",
-        "red": "#ab7a79",
-        "green": "#407743",
-        "lightBlue": "#63a3aa",
-        "darkBlue": "#506383",
-        "orange": "#d99c76",
+        "background": "#282c34",
+        "black": "#282c34",
+        "white": "#dcdfe4",
+        "red": "#e06c75",
+        "green": "#98c379",
+        "lightBlue": "#56b6c2",
+        "darkBlue": "#61afef",
+        "orange": "#e5c07b",
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar-hide')
+  ]
 }

@@ -23,11 +23,19 @@ const commandList = {
         "info": "Clears terminal",
         "exec": (c) => <></>
     },
+    "echo": {
+        "info": "Prints the arguments",
+        "exec": echo,
+    },
+    "specials": {
+        "info": "Gives info about special commands",
+        "exec": (c) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
+    },
     "history": {
         "info": "Show past commands",
         "exec": (c) => c.hasOwnProperty("history") ? <div>
             <For className="" each={c.history} fallback={<p>No past commands given</p>}>
-                {i => <p>{i}</p>}
+                {i => <div className="min-w-fit min-h-full flex flex-row items-start justify-start"><p className="w-[3rem]">{i.counter}</p><p>{i.text}</p></div>}
             </For>
         </div> :
             <></>
@@ -35,11 +43,16 @@ const commandList = {
 }
 
 export const styleComm = {
-    "validateStyle": (command) => validateCommand(command) ? " text-green " : " text-red "
+    "validateStyle": (command) => validateCommand(command) ? " text-green " : " text-red ",
+    "code": " text-orange "
 }
 
 export function validateCommand(c) {
     return Object.keys(commandList).includes(c)
+}
+
+export function validateCommandRepeat(c){
+    return /![\d]+/gm.test(c.text)
 }
 
 export function execCommand(c) {
@@ -49,7 +62,12 @@ export function execCommand(c) {
         return notCommand(c)
 }
 
-function notCommand(c) {
-    return <p>Command {c} does not exists</p>
+function echo(c) {
+    if (c.hasOwnProperty("args") && c.args.length > 0)
+        return <p>{c.args.join(" ")}</p>
+    return <p>No arguments given</p>
+}
 
+function notCommand(c) {
+    return <p>Command <span className={styleComm.code}>{c.text}</span>{c} does not exists</p>
 }
