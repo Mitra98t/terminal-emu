@@ -88,6 +88,10 @@ function App() {
         setTimeout(() => {
           setUser("guest")
           setOldCommands([])
+          setCommandHistory([])
+          setCommandCount(0)
+          passwordInput.value = ""
+          inputCommand.value = ""
         }, 1000);
       }
     }
