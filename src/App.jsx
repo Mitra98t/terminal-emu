@@ -1,7 +1,7 @@
 import { createEffect, createSignal, onMount, Show } from "solid-js";
 import PastCommands from "./modules/PastCommands";
 import Prompt from "./modules/Prompt";
-import { commandList, execCommand, hasProblem, validateCommandRepeat } from './utils/Command'
+import { commandList, hasProblem, validateCommandRepeat } from './utils/Command'
 import { ubuntuLogo } from "./utils/Texts";
 
 import './index.css';
@@ -14,7 +14,7 @@ function App() {
   const [historyPointer, setHistoryPointer] = createSignal(-1)
   const [commandCount, setCommandCount] = createSignal(0)
 
-  const [user, setUser] = createSignal("guest")
+  const [user, setUser] = createSignal({ "userName": "guest" })
 
   const [startupLogo, setStartupLogo] = createSignal(true)
   const [crt, setCrt] = createSignal(false)
@@ -38,7 +38,7 @@ function App() {
         setSudoRoutine(false)
         passwordInput.value = ""
         inputCommand.value = ""
-        setUser("guest")
+        setUser({ "userName": "guest" })
         setWrongPass(false)
       }, 2000);
     }
@@ -46,7 +46,7 @@ function App() {
       setOldCommands([])
       setCommandHistory([])
       setCommandCount(0)
-      setUser("root")
+      setUser({ "userName": "root" })
       passwordInput.value = ""
       inputCommand.value = ""
       setSudoRoutine(false)
@@ -73,20 +73,16 @@ function App() {
     setHistoryPointer(updatedHistory.length - 1)
 
     if (command.command == "sudo") {
-      if (user() == "root") {
-        command.options = { "unable": true }
-      }
-      else {
+      if (hasProblem(command, user) == "")
         setSudoRoutine(true)
-      }
     }
 
     if (command.command == "history") command.history = [...commandHistory()]
     if (command.command == "exit") {
-      command.wasSudo = user() == "root"
-      if (user() == "root") {
+      command.wasSudo = user().userName == "root"
+      if (hasProblem(command, user) == "") {
         setTimeout(() => {
-          setUser("guest")
+          setUser({ "userName": "guest" })
           setOldCommands([])
           setCommandHistory([])
           setCommandCount(0)
@@ -96,9 +92,8 @@ function App() {
       }
     }
     if (command.command == "crt") {
-      command.options = { "needRoot": true, "root": (user() == "root") }
       command.wasCrt = crt()
-      if (user() == "root") {
+      if (hasProblem(command, user) == "") {
         setCrt(() => !crt())
       }
     }

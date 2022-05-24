@@ -13,7 +13,8 @@ export const commandList = {
     },
     "sudo": {
         "info": "Grants root access",
-        "exec": (c) => <></>
+        "exec": (c) => <></>,
+        "validation": (c, u) => { console.log(u().userName); return u().userName == "root" ? "unable" : "" }
     },
     "info": {
         "info": "Gives general information",
@@ -34,6 +35,7 @@ export const commandList = {
     "exit": {
         "info": "Exit current situation",
         "exec": exit,
+        "validation": (c, u) => u().userName == "root" ? "" : "unable"
     },
     "man": {
         "info": "Show info about specific command",
@@ -42,6 +44,7 @@ export const commandList = {
     "crt": {
         "info": "Surprise (need sudo)",
         "exec": crt,
+        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm",
     },
     "history": {
         "info": "Show past commands",
@@ -55,26 +58,29 @@ export const commandList = {
 }
 
 export const styleComm = {
-    "validateStyle": (command) => hasProblem(command) == "" ? " text-green " : " text-red ",
+    "validateStyle": (command, userStatus) => hasProblem(command, userStatus) == "" ? " text-green " : " text-red ",
     "code": " text-orange "
 }
 
-export function hasProblem(c) {
+export function hasProblem(c, u) {
     if (!Object.keys(commandList).includes(c.command))
         return "notExists"
-    if (c.options.unable)
-        return "unable"
-    if (c.options.needRoot && !c.options.root)
-        return "missingPerm"
-    return ""
+
+    if (commandList[c.command].hasOwnProperty("validation")) {
+        console.log("running custom validation")
+        console.log("custom validation = " + commandList[c.command].validation(c, u))
+        return commandList[c.command].validation(c, u)
+    }
+
+    return "unable"
 }
 
 export function validateCommandRepeat(c) {
     return /![\d]+/gm.test(c.text)
 }
 
-export function execCommand(c, options = null) {
-    let validation = hasProblem(c)
+export function execCommand(c, u) {
+    let validation = hasProblem(c, u)
     if (validation == "")
         return commandList[c.command].exec(c)
     else
