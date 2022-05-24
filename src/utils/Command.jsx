@@ -62,6 +62,11 @@ export const commandList = {
         "exec": (c) => <p>Are you sure?</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
+    "myopia": {
+        "info": "Have you find your glasses?",
+        "exec": (c) => <p>Have you find your glasses?</p>,
+        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+    },
     "history": {
         "info": "Show past commands",
         "exec": (c) => c.hasOwnProperty("history") ? <div>
