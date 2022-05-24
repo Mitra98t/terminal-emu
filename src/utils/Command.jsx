@@ -52,6 +52,16 @@ export const commandList = {
         "exec": crt,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm",
     },
+    "snake": {
+        "info": "Nice choise",
+        "exec": (c) => <p>Nice job!</p>,
+        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+    },
+    "invert": {
+        "info": "Inverts color",
+        "exec": (c) => <p>Are you sure?</p>,
+        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+    },
     "history": {
         "info": "Show past commands",
         "exec": (c) => c.hasOwnProperty("history") ? <div>
