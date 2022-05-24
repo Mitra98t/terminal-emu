@@ -14,6 +14,7 @@ function App() {
   const [possiblesTabCompl, setPossiblesTabCompl] = createSignal([])
   const [historyPointer, setHistoryPointer] = createSignal(-1)
   const [commandCount, setCommandCount] = createSignal(0)
+  const [windowDim, setWindowDim] = createSignal([window.innerWidth, window.innerHeight])
 
   const [user, setUser] = createSignal({ "userName": "guest" })
 
@@ -123,6 +124,7 @@ function App() {
   }
 
   onMount(() => {
+    console.log(windowDim())
     document.body.addEventListener("click", () => {
       let commandInEl = document.getElementById("commandInput")
       let passwdInEl = document.getElementById("passwordInput")
@@ -212,8 +214,8 @@ function App() {
   return (
     <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       <div class='scrollbar-hide w-full h-full font-mono leading-5 overflow-y-scroll selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4'>
-        <Show when={snakeActive()}><div className="absolute inset-0 flex flex-col gap-1 items-center justify-start">
-          <div className="h-8 w-[419px] border-2 border-orange bg-background rounded-lg">
+        <Show when={snakeActive()}><div id="SnakeDiv" className="absolute top-[15%] left-1/4 w-min min-h-fit flex flex-col gap-1 items-center justify-start" >
+          <div className="h-8 w-[419px] z-2 border-2 border-orange bg-background rounded-lg">
             <svg className="w-auto h-full stroke-2 text-red" onClick={() => setSnakeActive(false)} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </div>
           <Gamezone />
@@ -271,7 +273,7 @@ function App() {
             </div>
         }
         <div id="inView"></div>
-      </div>
+      </div >
     </div >
   );
 }

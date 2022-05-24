@@ -55,7 +55,7 @@ export const commandList = {
     "snake": {
         "info": "Nice choise",
         "exec": (c) => <p>Nice job!</p>,
-        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+        // "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
     "invert": {
         "info": "Inverts color",
