@@ -55,6 +55,7 @@ function App() {
 
   function commandSubmit(event) {
     event.preventDefault();
+    if (isEmptyOrSpaces(inputCommand.value)) return
     let command = {}
     let words = inputCommand.value.split(" ")
     command.text = inputCommand.value
@@ -191,6 +192,10 @@ function App() {
     } else {
       element["on" + eventName] = callback;
     }
+  }
+
+  function isEmptyOrSpaces(str) {
+    return str === null || str.match(/^ *$/) !== null;
   }
 
   return (
