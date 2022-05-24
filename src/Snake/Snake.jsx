@@ -5,7 +5,7 @@ function Snake({ snakeDots }) {
             <For each={snakeDots()}>
                 {(dot) => {
                     return <div
-                        className="absolute w-[4%] h-[4%] bg-white border border-orange rounded z-[6]"
+                        className="absolute w-[4%] h-[4%] bg-darkBlue border border-green rounded z-[6]"
                         style={{
                             left: `${dot[0] * 4}%`,
                             top: `${dot[1] * 4}%`
