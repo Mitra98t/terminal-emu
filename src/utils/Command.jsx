@@ -13,7 +13,8 @@ export const commandList = {
     },
     "sudo": {
         "info": "Grants root access",
-        "exec": (c) => <></>
+        "exec": (c) => <></>,
+        "validation": (c, u) => { console.log(u().userName); return u().userName == "root" ? "unable" : "" }
     },
     "info": {
         "info": "Gives general information",
@@ -38,10 +39,18 @@ export const commandList = {
     "man": {
         "info": "Show info about specific command",
         "exec": man,
+        "usage": "man <command>",
+        "description": "man is the system's manual pager. Each page argument given to man is normally the \
+        name of a program, utility or function. The manual page associated with each of these argu‐\
+        ments is then found and displayed. A section, if provided, will direct man to look only in that section \
+        of the manual. The default action is to search in all of the available \
+        sections following a pre-defined order, and to show only the first page found, \
+        even if page exists in several sections.",
     },
     "crt": {
         "info": "Surprise (need sudo)",
         "exec": crt,
+        "validation": (c, u) => u().userName == "root" ? "" : "missingPerm",
     },
     "history": {
         "info": "Show past commands",
@@ -55,26 +64,33 @@ export const commandList = {
 }
 
 export const styleComm = {
-    "validateStyle": (command) => hasProblem(command) == "" ? " text-green " : " text-red ",
-    "code": " text-orange "
+    "validateStyle": (command, userStatus) => hasProblem(command, userStatus) == "" ? " text-green " : " text-red ",
+    "code": " text-orange ",
 }
 
-export function hasProblem(c) {
+export function hasProblem(c, u) {
     if (!Object.keys(commandList).includes(c.command))
         return "notExists"
-    if (c.options.unable)
-        return "unable"
-    if (c.options.needRoot && !c.options.root)
-        return "missingPerm"
-    return ""
+
+
+    if (commandList[c.command].hasOwnProperty("validation")) {
+        console.log("running custom validation")
+        console.log("custom validation = " + commandList[c.command].validation(c, u))
+        return commandList[c.command].validation(c, u)
+    }
+
+    if (Object.keys(commandList).includes(c.command))
+        return ""
+
+    return "unable"
 }
 
 export function validateCommandRepeat(c) {
     return /![\d]+/gm.test(c.text)
 }
 
-export function execCommand(c, options = null) {
-    let validation = hasProblem(c)
+export function execCommand(c, u) {
+    let validation = hasProblem(c, u)
     if (validation == "")
         return commandList[c.command].exec(c)
     else
@@ -106,7 +122,22 @@ function exit(c) {
 
 function man(c) {
     if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>man {"<command>"}</span></p>
-    if (Object.keys(commandList).includes(c.args[0])) return <div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{c.args[0]}</p><p>{commandList[c.args[0]].info}</p></div>
+    if (Object.keys(commandList).includes(c.args[0])) return (
+        <div className="min-h-fit w-full flex flex-col">
+            <p className="font-bold">INFO</p>
+            <div className="flex flex-row min-w-fit pl-2">
+                <p className={styleComm.code + " w-[7rem]"}>{c.args[0]}</p><p>{commandList[c.args[0]].info}</p>
+            </div>
+            <Show when={commandList[c.args[0]].hasOwnProperty("usage")}>
+                <p className="font-bold">Usage</p>
+                <p className={styleComm.code + " pl-2"}>{commandList[c.args[0]].usage}</p>
+            </Show>
+            <Show when={commandList[c.args[0]].hasOwnProperty("description")}>
+                <p className="font-bold">Description</p>
+                <p className=" pl-2">{commandList[c.args[0]].description}</p>
+            </Show>
+        </div>
+    )
     else return <p>Command <span className={styleComm.code}>{c.args[0]}</span> does not exits</p>
 }
 
