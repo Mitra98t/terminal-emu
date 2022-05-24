@@ -34,7 +34,7 @@ export const ubuntuLogo = " \
 ',$$P       ,ggs.     `$$b:   Kernel: 8.2.32-v12+                             \n \
 `d$$'     ,$P''   .    $$$    Uptime: around 12 days...                       \n \
  $$P      d$'     ,    $$P    Packages: lost the count                        \n \
- $$:      $$.   -    ,d$$'    Shell: Do you lie it? I made it!                \n \
+ $$:      $$.   -    ,d$$'    Shell: Do you like it? I made it!                \n \
  $$;      Y$b._   _,d$P'      Terminal: /dev/pts/0                            \n \
  Y$$.    `.`'Y$$$$P''         CPU: A hell of a CPU BOIIII                     \n \
  `$$b      '-.__              Memory: Probably like 128gb                     \n \
