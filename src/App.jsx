@@ -6,6 +6,7 @@ import { ubuntuLogo } from "./utils/Texts";
 
 import './index.css';
 import { stringify } from "postcss";
+import Gamezone from "./Snake/Gamezone";
 
 function App() {
   const [commandHistory, setCommandHistory] = createSignal([])
@@ -20,6 +21,8 @@ function App() {
   const [crt, setCrt] = createSignal(false)
   const [sudoRoutine, setSudoRoutine] = createSignal(false)
   const [wrongPass, setWrongPass] = createSignal(false)
+  const [snakeActive, setSnakeActive] = createSignal(false)
+  const [invertColor, setInvertColor] = createSignal(false)
 
   let inputCommand
   let passwordInput
@@ -98,6 +101,13 @@ function App() {
         setCrt(() => !crt())
       }
     }
+    if (command.command == "snake")
+      if (hasProblem(command, user) == "")
+        setSnakeActive(true)
+
+    if (command.command == "invert")
+      if (hasProblem(command, user) == "")
+        setInvertColor(!invertColor())
 
     let updateOldCom = [...oldCommands(), command]
     setOldCommands(updateOldCom)
@@ -156,6 +166,7 @@ function App() {
 
   function historyNavigate(e) {
     e.preventDefault()
+    if (snakeActive()) return
     let keyCode = e.keyCode
     switch (keyCode) {
       case 38:
@@ -199,8 +210,14 @@ function App() {
   }
 
   return (
-    <div class={(crt() ? "crt " : " ") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
+    <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       <div class='scrollbar-hide w-full h-full font-mono leading-5 overflow-y-scroll selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4'>
+        <Show when={snakeActive()}><div className="absolute inset-0 flex flex-col gap-1 items-center justify-start">
+          <div className="h-8 w-[419px] border-2 border-orange bg-background rounded-lg">
+            <svg className="w-auto h-full stroke-2 text-red" onClick={() => setSnakeActive(false)} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          </div>
+          <Gamezone />
+        </div></Show>
         <Show when={startupLogo()}>
           <pre>{ubuntuLogo}</pre>
         </Show>
