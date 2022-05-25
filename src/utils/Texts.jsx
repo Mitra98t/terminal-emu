@@ -27,7 +27,7 @@ export const fsociety = ' \
 '
 
 export const ubuntuLogo = " \
-       _,met$$$$$gg.          guest@wow.com                                   \n \
+       _,met$$$$$gg.          terminal-emu@wow.com                            \n \
     ,g$$$$$$$$$$$$$$$P.       -------------                                   \n \
   ,g$$P'     '''Y$$.'.        OS: Debian GNU/Linux 11 (bullseye) aarch64      \n \
  ,$$P'              `$$$.     Host: Some server who knows where               \n \
