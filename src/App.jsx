@@ -190,7 +190,7 @@ function App() {
     let possibles = []
     let wordToCompareArr = inputCommand.value.split(" ")
     let wordToCompare = wordToCompareArr.pop()
-    if (wordToCompareArr.length > 0 && wordToCompareArr[wordToCompareArr.length - 1] == "cat")
+    if (wordToCompareArr.length > 0 && (wordToCompareArr[wordToCompareArr.length - 1] == "cat" || wordToCompareArr[wordToCompareArr.length - 1] == ">>" || wordToCompareArr[wordToCompareArr.length - 1] == "empty"))
       filesArr.forEach(file => {
         if (wordToCompare.toUpperCase() == file.title.slice(0, wordToCompare.length).toUpperCase())
           possibles.push(file.title)
@@ -262,15 +262,39 @@ function App() {
       setFinals(newFinalsObj)
     }
   }
-  function resetFinals() {
+  function resetGame() {
     localStorage.removeItem("finals")
+    localStorage.removeItem("Files")
     setFinals(finalsObj)
+
+    setCommandHistory([])
+    setOldCommands([])
+    setPossiblesTabCompl([])
+    setHistoryPointer(-1)
+    setCommandCount(0)
+    setWindowDim([window.innerWidth, window.innerHeight])
+    setFirstSudoComm(null)
+
+    setUser({ "userName": "guest" })
+
+    setStartupLogo(true)
+    setCrt(false)
+    setSudoRoutine(false)
+    setWrongPass(false)
+    setSnakeActive(false)
+    setSnakePointCounter(1)
+    setInvertColor(false)
+    setMyopia(false)
+    document.location.reload(true)
   }
 
   return (
     <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert rotate-180 -scale-x-1 " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       {myopia() ? <div className="w-full h-screen absolute inset-0 z-50 backdrop-blur-sm pointer-events-none"></div> : <></>}
-      <div className="absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer" onClick={resetFinals}><p>Reset</p></div>
+      <div
+        className="absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer"
+        onClick={resetGame}
+      ><p>Reset Game</p></div>
       <div className="absolute z-[4] top-2 right-2 min-w-fit">
         <div className="relative w-full h-full grid grid-cols-4 grid-flow-row gap-3">
           <For each={Object.keys(finals())} fallback={<></>}>

@@ -1,4 +1,4 @@
-export const filesArr = [
+const defaultFiles = [
     {
         "title": "Whoami.txt",
         "content": "An old developer, i like Snake!",
@@ -9,4 +9,11 @@ export const filesArr = [
         "content": "A simple test, dont worry about it...",
         "perms": "root"
     },
+    {
+        "title": "scrivi.txt",
+        "content": "",
+        "perms": "root write"
+    },
 ]
+
+export var filesArr = localStorage.getItem("Files") ? JSON.parse(localStorage.getItem("Files")) : defaultFiles

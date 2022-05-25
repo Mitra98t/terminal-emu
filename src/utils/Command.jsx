@@ -31,6 +31,10 @@ export const commandList = {
         "info": "Prints the arguments",
         "exec": echo,
     },
+    "empty": {
+        "info": "Clear file content",
+        "exec": empty,
+    },
     "specials": {
         "info": "Gives info about special commands",
         "exec": (c, u) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
@@ -142,9 +146,45 @@ export function execCommand(c, u) {
         }
 }
 
+function empty(c, u) {
+    if (c.hasOwnProperty("args") && c.args.length == 1) {
+        let indexOfFile = filesArr.findIndex(f => f.title == c.args[0])
+        if (indexOfFile == -1) return <p>File <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span> does not exists</p>
+        if (filesArr[indexOfFile].perms.includes("write")) {
+            if ((filesArr[indexOfFile].perms.includes("all") || (filesArr[indexOfFile].perms.includes("root") && u().userName == "root"))) {
+                filesArr[indexOfFile].content = ""
+                localStorage.setItem("Files", JSON.stringify(filesArr))
+                return <p>File <span className={styleComm.code}>{c.args[0]}</span> emptied</p>
+            }
+            return <p>Insufficent permissions to modify file <span className={styleComm.code}>{c.args[0]}</span></p>
+        }
+        return <p>Can not modify file <span className={styleComm.code}>{c.args[0]}</span></p>
+    }
+    return <p>Usage: <span className={styleComm.code}>{"empty <fileName>"}</span></p>
+}
+
 function echo(c, u) {
-    if (c.hasOwnProperty("args") && c.args.length > 0)
+    if (c.hasOwnProperty("args") && c.args.length > 0) {
+        let indexOfRedir = c.args.findIndex(a => a == ">>")
+        if (indexOfRedir != -1) {
+            let indexOfFile = filesArr.findIndex(f => f.title == c.args[indexOfRedir + 1])
+            if (indexOfFile == -1) return <p>File <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span> does not exists</p>
+            if (filesArr[indexOfFile].perms.includes("write")) {
+                if ((filesArr[indexOfFile].perms.includes("all") || (filesArr[indexOfFile].perms.includes("root") && u().userName == "root"))) {
+                    let toWrite = c.args.slice(0, indexOfRedir).join(" ")
+                    filesArr[indexOfFile].content += ((filesArr[indexOfFile].content == "" ? "" : "\n") + toWrite)
+                    localStorage.setItem("Files", JSON.stringify(filesArr))
+                    return <></>
+                }
+                else {
+                    return <p>Insufficent permissions to write to file <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span></p>
+                }
+            }
+            else
+                return <p>Can not write to file <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span></p>
+        }
         return <p>{c.args.join(" ")}</p>
+    }
     return <p>No arguments given</p>
 }
 
@@ -187,14 +227,15 @@ function ls(c, u) {
             {file => <p>{file.title}</p>}
         </For>
     </div>
+
 }
 
 function cat(c, u) {
     if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>cat {"<filename>"}</span></p>
     let indexOfFile = filesArr.findIndex(file => file.title == c.args[0])
     if (indexOfFile != -1) {
-        if (filesArr[indexOfFile].perms == "all" || (filesArr[indexOfFile].perms == "root" && u().userName == "root"))
-            return <p>{filesArr[indexOfFile].content}</p>
+        if (filesArr[indexOfFile].perms.includes("all") || (filesArr[indexOfFile].perms.includes("root") && u().userName == "root"))
+            return <pre>{filesArr[indexOfFile].content}</pre>
         else
             return <p>Insufficent permission to view <span className={styleComm.code}>{c.args[0]}</span> content</p>
 
