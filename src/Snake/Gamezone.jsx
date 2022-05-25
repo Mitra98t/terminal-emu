@@ -101,7 +101,6 @@ function Gamezone({ snakeCounter, setSnakeCounter }) {
         setSpeed(200)
         setDirection("RIGHT")
         setSnakeDots([[0, 12], [1, 12]])
-        setSnakeCounter(1)
     }
 
 

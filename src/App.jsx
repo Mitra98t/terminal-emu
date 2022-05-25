@@ -132,6 +132,16 @@ function App() {
           updateFinals(command.command)
         }
         break
+      case "fsociety":
+        if (hasProblem(command, user) == "") {
+          updateFinals(command.command)
+        }
+        break
+      case "sickbug":
+        if (hasProblem(command, user) == "") {
+          updateFinals(command.command)
+        }
+        break
     }
 
     let updateOldCom = [...oldCommands(), command]
@@ -257,7 +267,7 @@ function App() {
   function updateFinals(finalToAdd) {
     let newFinalsObj = { ...finals() }
     if (newFinalsObj.hasOwnProperty(finalToAdd)) {
-      newFinalsObj[finalToAdd] = true
+      newFinalsObj[finalToAdd].done = true
       localStorage.setItem("finals", JSON.stringify(newFinalsObj))
       setFinals(newFinalsObj)
     }
@@ -297,19 +307,22 @@ function App() {
       ><p>Reset Game</p></div>
       <div className="absolute z-[4] top-2 right-2 min-w-fit">
         <div className="relative w-full h-full grid grid-cols-4 grid-flow-row gap-3">
-          <For each={Object.keys(finals())} fallback={<></>}>
-            {fin => <div tooltip-title={(finals()[fin] ? fin : null)} className={(finals()[fin] ? " bg-orange " : " bg-background ") + " final w-5 h-5 rounded-full border-2 border-orange"}></div>}
+          <For each={Object.keys(finals()).filter((f => !finals()[f].secret))} fallback={<></>}>
+            {fin => <div tooltip-title={(finals()[fin].done ? fin : null)} className={(finals()[fin].done ? " bg-orange " : " bg-background  ") + " final w-5 h-5 rounded-full border-2 border-orange"}></div>}
+          </For>
+          <For each={Object.keys(finals()).filter((f => finals()[f].secret))} fallback={<></>}>
+            {fin => <div tooltip-title={(finals()[fin].done ? fin : null)} className={(finals()[fin].done ? " bg-red border-red " : " bg-transparent border-transparent  ") + " final w-5 h-5 rounded-full border-2"}></div>}
           </For>
         </div>
       </div>
+      <Show when={snakeActive()}><div id="SnakeDiv" className=" text-white font-mono absolute top-[15%] left-1/4 w-min min-h-fit flex flex-col gap-1 items-center justify-start" >
+        <div className="h-8 w-[419px] z-[4] border-2 border-orange bg-background rounded-lg flex flex-row items-center justify-between">
+          <svg className="w-auto h-full stroke-2 text-red cursor-pointer" onClick={() => setSnakeActive(false)} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          <p className="px-2">{snakePointCounter()}</p>
+        </div>
+        <Gamezone snakeCounter={snakePointCounter} setSnakeCounter={setSnakePointCounter} />
+      </div></Show>
       <div class='relative scrollbar-hide w-full h-full font-mono leading-5 overflow-y-scroll selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4'>
-        <Show when={snakeActive()}><div id="SnakeDiv" className="absolute top-[15%] left-1/4 w-min min-h-fit flex flex-col gap-1 items-center justify-start" >
-          <div className="h-8 w-[419px] z-[4] border-2 border-orange bg-background rounded-lg flex flex-row items-center justify-between">
-            <svg className="w-auto h-full stroke-2 text-red cursor-pointer" onClick={() => setSnakeActive(false)} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-            <p className="px-2">{snakePointCounter()}</p>
-          </div>
-          <Gamezone snakeCounter={snakePointCounter} setSnakeCounter={setSnakePointCounter} />
-        </div></Show>
         <Show when={startupLogo()}>
           <pre>{ubuntuLogo}</pre>
         </Show>

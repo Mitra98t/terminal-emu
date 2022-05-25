@@ -1,6 +1,8 @@
 export const finalsObj = {
-    "snake": false,
-    "crt": false,
-    "myopia": false,
-    "invert": false,
+    "snake": { "done": false, "secret": false },
+    "crt": { "done": false, "secret": false },
+    "myopia": { "done": false, "secret": false },
+    "invert": { "done": false, "secret": false },
+    "fsociety": { "done": false, "secret": true },
+    "sickbug": { "done": false, "secret": true },
 }
