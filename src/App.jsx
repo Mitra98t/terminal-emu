@@ -8,6 +8,7 @@ import './index.css';
 import { stringify } from "postcss";
 import Gamezone from "./Snake/Gamezone";
 import { finalsObj } from "./utils/Finals";
+import { filesArr } from "./utils/Files";
 
 function App() {
   const [commandHistory, setCommandHistory] = createSignal([])
@@ -80,8 +81,9 @@ function App() {
     switch (command.command) {
       case "sudo":
         if (hasProblem(command, user) == "") {
-          if (command.args.length == 1) {
-            let addedCommand = { "command": command.args[0], "args": [], "text": command.args[0], "counter": 0 }
+          if (command.args.length > 0) {
+            let addedCommand = { "command": command.args[0], "args": [...command.args], "text": command.args.join(" "), "counter": 0 }
+            addedCommand.args.shift()
             setFirstSudoComm(addedCommand)
           }
           setSudoRoutine(true)
@@ -186,12 +188,21 @@ function App() {
   function tabComplete(e) {
     e.preventDefault()
     let possibles = []
-    Object.keys(commandList).forEach(comm => {
-      if (inputCommand.value == comm.slice(0, inputCommand.value.length))
-        possibles.push(comm)
-    });
+    let wordToCompareArr = inputCommand.value.split(" ")
+    let wordToCompare = wordToCompareArr.pop()
+    if (wordToCompareArr.length > 0 && wordToCompareArr[wordToCompareArr.length - 1] == "cat")
+      filesArr.forEach(file => {
+        if (wordToCompare.toUpperCase() == file.title.slice(0, wordToCompare.length).toUpperCase())
+          possibles.push(file.title)
+      });
+    else
+      Object.keys(commandList).forEach(comm => {
+        if (wordToCompare.toUpperCase() == comm.slice(0, wordToCompare.length).toUpperCase())
+          possibles.push(comm)
+      });
     if (possibles.length == 1) {
-      inputCommand.value = possibles[0]
+      wordToCompareArr.push(possibles[0])
+      inputCommand.value = wordToCompareArr.join(" ")
       setPossiblesTabCompl([])
       return
     }
