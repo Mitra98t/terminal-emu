@@ -1,11 +1,12 @@
 import { filesArr } from "./Files"
+import { fsociety } from "./Texts"
 
 export const commandList = {
     "help": {
         "info": "Display all commands available",
         "exec": (c, u) => <div className="min-h-fit flex flex-col items-start">
             <For each={Object.keys(commandList)} fallback={<></>}>
-                {i => (<div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{i}</p><p>{commandList[i].info}</p></div>)}
+                {i => commandList[i].hasOwnProperty("secret") && commandList[i].secret ? (<></>) : (<div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{i}</p><p>{commandList[i].info}</p></div>)}
             </For>
         </div>
     },
@@ -77,6 +78,11 @@ export const commandList = {
         "info": "Have you find your glasses?",
         "exec": (c, u) => <p>Have you found your glasses?</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+    },
+    "fsociety": {
+        "info": "Dont mind if i do...",
+        "exec": (c, u) => <pre>{fsociety}</pre>,
+        "secret": true,
     },
     "history": {
         "info": "Show past commands",
