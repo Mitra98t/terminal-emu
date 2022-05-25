@@ -95,14 +95,16 @@ function App() {
       case "exit":
         command.wasSudo = user().userName == "root"
         if (hasProblem(command, user) == "") {
-          setTimeout(() => {
-            setUser({ "userName": "guest" })
-            setOldCommands([])
-            setCommandHistory([])
-            setCommandCount(0)
-            passwordInput.value = ""
-            inputCommand.value = ""
-          }, 1000);
+          if (command.wasSudo) {
+            setTimeout(() => {
+              setUser({ "userName": "guest" })
+              setOldCommands([])
+              setCommandHistory([])
+              setCommandCount(0)
+              passwordInput.value = ""
+              inputCommand.value = ""
+            }, 1000);
+          }
         }
         break
       case "crt":
@@ -160,8 +162,9 @@ function App() {
     event.preventDefault();
     if (isEmptyOrSpaces(inputCommand.value)) return
     let command = {}
-    let words = inputCommand.value.split(" ")
     command.text = inputCommand.value
+    let string = inputCommand.value
+    let words = string.replace(/\s+/g, ' ').trim().split(" ");
     command.command = words[0]
     words.shift()
     command.args = [...words]
@@ -198,9 +201,9 @@ function App() {
   function tabComplete(e) {
     e.preventDefault()
     let possibles = []
-    let wordToCompareArr = inputCommand.value.split(" ")
+    let wordToCompareArr = inputCommand.value.replace(/\s+/g, ' ').trim().split(" ")
     let wordToCompare = wordToCompareArr.pop()
-    if (wordToCompareArr.length > 0 && (wordToCompareArr[wordToCompareArr.length - 1] == "cat" || wordToCompareArr[wordToCompareArr.length - 1] == ">>" || wordToCompareArr[wordToCompareArr.length - 1] == "empty"))
+    if (wordToCompareArr.length > 0 && (["cat", ">>", "empty"].includes(wordToCompareArr[wordToCompareArr.length - 1])))
       filesArr.forEach(file => {
         if (wordToCompare.toUpperCase() == file.title.slice(0, wordToCompare.length).toUpperCase())
           possibles.push(file.title)

@@ -167,6 +167,7 @@ function echo(c, u) {
     if (c.hasOwnProperty("args") && c.args.length > 0) {
         let indexOfRedir = c.args.findIndex(a => a == ">>")
         if (indexOfRedir != -1) {
+            if (indexOfRedir == 0) return <p>No message to write given</p>
             let indexOfFile = filesArr.findIndex(f => f.title == c.args[indexOfRedir + 1])
             if (indexOfFile == -1) return <p>File <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span> does not exists</p>
             if (filesArr[indexOfFile].perms.includes("write")) {
