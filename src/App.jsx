@@ -268,7 +268,7 @@ function App() {
   }
 
   return (
-    <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
+    <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert rotate-180 -scale-x-1 " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       {myopia() ? <div className="w-full h-screen absolute inset-0 z-50 backdrop-blur-sm pointer-events-none"></div> : <></>}
       <div className="absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer" onClick={resetFinals}><p>Reset</p></div>
       <div className="absolute z-[4] top-2 right-2 min-w-fit">
