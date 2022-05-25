@@ -301,9 +301,17 @@ function App() {
     document.location.reload(true)
   }
 
-  return (
+  return ((windowDim()[0] < 950 || windowDim()[1] < 600) ? (<div className="w-full h-screen overflow-y-auto bg-background p-4 text-lg">
+    <div class='w-full h-full font-mono leading-5 selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4 flex flex-row items-center justify-center'>
+      <div className="min-w-fit min-h-fit flex flex-col items-end ">
+        <p className="text-xl">A {(windowDim()[0] < 950 && windowDim()[1] < 600) ? "bigger" : (windowDim()[0] < 950 ? "wider" : "taller")} screen is needed to use this website.</p>
+        <p className="pl-14 mt-4 text-md">~developerTeam</p>
+      </div>
+    </div>
+  </div>) : (
     <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert rotate-180 -scale-x-1 " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
-      {myopia() ? <div className="w-full h-screen absolute inset-0 z-50 backdrop-blur-sm pointer-events-none"></div> : <></>}
+      {myopia() ? <div div className="w-full h-screen absolute inset-0 z-50 backdrop-blur-sm pointer-events-none" ></div > : <></>
+      }
       <div
         className="absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer"
         onClick={resetGame}
@@ -381,7 +389,7 @@ function App() {
         <div id="inView"></div>
       </div >
     </div >
-  );
+  ))
 }
 
 export default App;
