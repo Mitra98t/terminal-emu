@@ -206,3 +206,17 @@
 .crt {
   animation: textShadow 1.6s infinite;
 }
+
+
+.final[tooltip-title]:hover:before {
+  content: attr(tooltip-title);
+  position: absolute;
+  bottom: -3rem;
+  right: 0rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  border-width: 2px;
+  --tw-border-opacity: 1;
+  border-color: rgb(229 192 123 / var(--tw-border-opacity));
+  border-radius: 0.7rem;
+  padding: 0.5rem
+}

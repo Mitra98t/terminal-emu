@@ -2,7 +2,7 @@ import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import Food from "./Food";
 import Snake from "./Snake";
 
-function Gamezone() {
+function Gamezone({ snakeCounter, setSnakeCounter }) {
     function getRandomCoordinates() {
         let min = 0;
         let max = 25;
@@ -20,6 +20,7 @@ function Gamezone() {
     const [snakeDots, setSnakeDots] = createSignal([[0, 12], [1, 12]])
 
     onMount(() => {
+        setSnakeCounter(1)
         interval = setInterval(() => {
             moveSnake()
         }, speed());
@@ -27,6 +28,7 @@ function Gamezone() {
 
     onCleanup(() => {
         clearInterval(interval)
+        setSnakeCounter(1)
     })
 
     function moveSnake() {
@@ -77,6 +79,7 @@ function Gamezone() {
             setFoodCoord(getRandomCoordinates())
             enlargeSnake();
             increaseSpeed();
+            setSnakeCounter(snakeCounter() + 1)
         }
     }
 
@@ -98,6 +101,7 @@ function Gamezone() {
         setSpeed(200)
         setDirection("RIGHT")
         setSnakeDots([[0, 12], [1, 12]])
+        setSnakeCounter(1)
     }
 
 

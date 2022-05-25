@@ -14,7 +14,7 @@ export const commandList = {
     "sudo": {
         "info": "Grants root access",
         "exec": (c) => <></>,
-        "validation": (c, u) => { console.log(u().userName); return u().userName == "root" ? "unable" : "" }
+        "validation": (c, u) => { return u().userName == "root" ? "unable" : "" }
     },
     "info": {
         "info": "Gives general information",
@@ -89,8 +89,6 @@ export function hasProblem(c, u) {
 
 
     if (commandList[c.command].hasOwnProperty("validation")) {
-        console.log("running custom validation")
-        console.log("custom validation = " + commandList[c.command].validation(c, u))
         return commandList[c.command].validation(c, u)
     }
 
