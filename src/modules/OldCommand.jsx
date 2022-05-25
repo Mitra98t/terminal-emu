@@ -2,7 +2,6 @@ import { execCommand, styleComm } from "../utils/Command";
 import Prompt from "./Prompt";
 
 function OldCommand({ command, user }) {
-    console.log(command)
     return (
         <div className="w-full min-h-fit flex flex-col items-start justify-start">
             <div className="w-full min-h-fit flex flex-row gap-2">
