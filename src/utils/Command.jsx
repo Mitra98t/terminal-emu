@@ -1,7 +1,9 @@
+import { filesArr } from "./Files"
+
 export const commandList = {
     "help": {
         "info": "Display all commands available",
-        "exec": (c) => <div className="min-h-fit flex flex-col items-start">
+        "exec": (c, u) => <div className="min-h-fit flex flex-col items-start">
             <For each={Object.keys(commandList)} fallback={<></>}>
                 {i => (<div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{i}</p><p>{commandList[i].info}</p></div>)}
             </For>
@@ -9,20 +11,20 @@ export const commandList = {
     },
     "whoami": {
         "info": "A silly question dont you think?",
-        "exec": (c) => <p>"The fundamental question"</p>
+        "exec": (c, u) => <p>"The fundamental question"</p>
     },
     "sudo": {
         "info": "Grants root access",
-        "exec": (c) => <></>,
+        "exec": (c, u) => <></>,
         "validation": (c, u) => { return u().userName == "root" ? "unable" : "" }
     },
     "info": {
         "info": "Gives general information",
-        "exec": (c) => <p>Site made for fun</p>
+        "exec": (c, u) => <p>Site made for fun</p>
     },
     "clear": {
         "info": "Clears terminal",
-        "exec": (c) => <></>
+        "exec": (c, u) => <></>
     },
     "echo": {
         "info": "Prints the arguments",
@@ -30,7 +32,7 @@ export const commandList = {
     },
     "specials": {
         "info": "Gives info about special commands",
-        "exec": (c) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
+        "exec": (c, u) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
     },
     "exit": {
         "info": "Exit current situation",
@@ -47,6 +49,15 @@ export const commandList = {
         sections following a pre-defined order, and to show only the first page found, \
         even if page exists in several sections.",
     },
+    "ls": {
+        "info": "Show content of current directory",
+        "exec": ls,
+    },
+    "cat": {
+        "info": "Show content of specified file",
+        "usage": "cat <filename>",
+        "exec": cat,
+    },
     "crt": {
         "info": "Surprise (need sudo)",
         "exec": crt,
@@ -54,22 +65,22 @@ export const commandList = {
     },
     "snake": {
         "info": "Nice choise",
-        "exec": (c) => <p>Nice job!</p>,
+        "exec": (c, u) => <p>Nice job!</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
     "invert": {
         "info": "Inverts color",
-        "exec": (c) => <p>Are you sure?</p>,
+        "exec": (c, u) => <p>Are you sure?</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
     "myopia": {
         "info": "Have you find your glasses?",
-        "exec": (c) => <p>Have you find your glasses?</p>,
+        "exec": (c, u) => <p>Have you found your glasses?</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
     "history": {
         "info": "Show past commands",
-        "exec": (c) => c.hasOwnProperty("history") ? <div>
+        "exec": (c, u) => c.hasOwnProperty("history") ? <div>
             <For className="" each={c.history} fallback={<p>No past commands given</p>}>
                 {i => <div className="min-w-fit min-h-full flex flex-row items-start justify-start"><p className="w-[3rem]">{i.counter}</p><p>{i.text}</p></div>}
             </For>
@@ -105,7 +116,7 @@ export function validateCommandRepeat(c) {
 export function execCommand(c, u) {
     let validation = hasProblem(c, u)
     if (validation == "")
-        return commandList[c.command].exec(c)
+        return commandList[c.command].exec(c, u)
     else
         switch (validation) {
             case "notExists":
@@ -120,20 +131,20 @@ export function execCommand(c, u) {
         }
 }
 
-function echo(c) {
+function echo(c, u) {
     if (c.hasOwnProperty("args") && c.args.length > 0)
         return <p>{c.args.join(" ")}</p>
     return <p>No arguments given</p>
 }
 
-function exit(c) {
+function exit(c, u) {
     if (c.hasOwnProperty("wasSudo") && c.wasSudo)
         return <p>Exiting sudo!</p>
     else
         return <p>Nothing to exit!</p>
 }
 
-function man(c) {
+function man(c, u) {
     if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>man {"<command>"}</span></p>
     if (Object.keys(commandList).includes(c.args[0])) return (
         <div className="min-h-fit w-full flex flex-col">
@@ -154,9 +165,33 @@ function man(c) {
     else return <p>Command <span className={styleComm.code}>{c.args[0]}</span> does not exits</p>
 }
 
-function crt(c) {
+function crt(c, u) {
     if (c.hasOwnProperty("wasCrt") && c.wasCrt) return <p>Awww...</p>
     return <p>Nice!</p>
+}
+
+function ls(c, u) {
+    return <div className="bg-red min-h-fit w-full flex flex-row flex-wrap gap-4 items-start">
+        <For each={filesArr} fallback={<></>}>
+            {file => <p>{file.title}</p>}
+        </For>
+    </div>
+}
+
+function cat(c, u) {
+    console.log(u())
+    if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>cat {"<filename>"}</span></p>
+    let indexOfFile = filesArr.findIndex(file => file.title == c.args[0])
+    if (indexOfFile != -1) {
+        if (filesArr[indexOfFile].perms == "all" || (filesArr[indexOfFile].perms == "root" && u().userName == "root"))
+            return <p>{filesArr[indexOfFile].content}</p>
+        else
+            return <p>Insufficent permission to view <span className={styleComm.code}>{c.args[0]}</span> content</p>
+
+    }
+    else {
+        return <p>File <span className={styleComm.code}>{c.args[0]}</span> does not exists in this directiory</p>
+    }
 }
 
 function notCommand(c) {
