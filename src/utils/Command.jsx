@@ -179,7 +179,6 @@ function ls(c, u) {
 }
 
 function cat(c, u) {
-    console.log(u())
     if (c.args.length != 1) return <p>Usage: <span className={styleComm.code}>cat {"<filename>"}</span></p>
     let indexOfFile = filesArr.findIndex(file => file.title == c.args[0])
     if (indexOfFile != -1) {
