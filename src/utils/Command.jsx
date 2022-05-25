@@ -171,7 +171,7 @@ function crt(c, u) {
 }
 
 function ls(c, u) {
-    return <div className="bg-red min-h-fit w-full flex flex-row flex-wrap gap-4 items-start">
+    return <div className="min-h-fit w-full flex flex-row flex-wrap gap-4 items-start">
         <For each={filesArr} fallback={<></>}>
             {file => <p>{file.title}</p>}
         </For>
