@@ -4,7 +4,7 @@ import { fsociety, sickBug } from "./Texts"
 export const commandList = {
     "help": {
         "info": "Display all commands available",
-        "exec": (c, u) => <div className="min-h-fit flex flex-col items-start">
+        "exec": (c, u) => <div className="min-h-fit flex flex-col gap-y-0.5 items-start">
             <For each={Object.keys(commandList)} fallback={<></>}>
                 {i => commandList[i].hasOwnProperty("secret") && commandList[i].secret ? (<></>) : (<div className="flex flex-row min-w-fit"><p className={styleComm.code + " w-[10rem]"}>{i}</p><p>{commandList[i].info}</p></div>)}
             </For>
@@ -12,11 +12,12 @@ export const commandList = {
     },
     "whoami": {
         "info": "A silly question dont you think?",
-        "exec": (c, u) => <p>"The fundamental question"</p>
+        "exec": (c, u) => u().userName == "root" ? <p>"The chosen one"</p> : <p>"The fundamental question"<br />Better of searching some answers at a grater level.</p>
     },
     "sudo": {
         "info": "Grants root access",
         "exec": (c, u) => <></>,
+        "usage": ["sudo", "sudo <command to exec as sudo>"],
         "validation": (c, u) => { return u().userName == "root" ? "unable" : "" }
     },
     "info": {
@@ -28,16 +29,18 @@ export const commandList = {
         "exec": (c, u) => <></>
     },
     "echo": {
-        "info": "Prints the arguments",
+        "info": "Prints the arguments or writes the argument to file using redirect",
+        "usage": ["echo <message to print>", "echo <message to write> >> <file to write to>"],
         "exec": echo,
     },
     "empty": {
         "info": "Clear file content",
+        "usage": ["empty <file name>"],
         "exec": empty,
     },
     "specials": {
         "info": "Gives info about special commands",
-        "exec": (c, u) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> to exec the same command again</p>,
+        "exec": (c, u) => <p>Use <span className={styleComm.code}>{"!<command counter>"}</span> refering to the number given using the <span className={styleComm.code}>{"history"}</span> command, to exec the same command again</p>,
     },
     "exit": {
         "info": "Exit current situation",
@@ -46,7 +49,7 @@ export const commandList = {
     "man": {
         "info": "Show info about specific command",
         "exec": man,
-        "usage": "man <command>",
+        "usage": ["man <command>"],
         "description": "man is the system's manual pager. Each page argument given to man is normally the \
         name of a program, utility or function. The manual page associated with each of these argu‐\
         ments is then found and displayed. A section, if provided, will direct man to look only in that section \
@@ -56,25 +59,26 @@ export const commandList = {
     },
     "ls": {
         "info": "Show content of current directory",
+        "flags": { "l": "Shows more informations about the files listed" },
         "exec": ls,
     },
     "cat": {
         "info": "Show content of specified file",
-        "usage": "cat <filename>",
+        "usage": ["cat <filename>"],
         "exec": cat,
     },
     "crt": {
-        "info": "Surprise (need sudo)",
+        "info": "Surprise, feeling 80's vibes!",
         "exec": crt,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm",
     },
     "snake": {
-        "info": "Nice choise",
+        "info": "Nice choise! A good game, for a good man",
         "exec": (c, u) => <p>Nice job!</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
     "invert": {
-        "info": "Inverts color",
+        "info": "Inverts color, and something more...",
         "exec": (c, u) => <p>Are you sure?</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
@@ -103,6 +107,48 @@ export const commandList = {
             <></>
     }
 }
+
+// Using _ to make everything 5 char
+// var alphabetMorse = {
+//     'a': '_•-__', 'b': '-•••_', 'c': '-•-•_', 'd': '_-••_',
+//     'e': '__•__', 'f': '••-•_', 'g': '_--•_', 'h': '••••_',
+//     'i': '_••__', 'j': '•---_', 'k': '_-•-_', 'l': '•-••_',
+//     'm': '_--__', 'n': '_-•__', 'o': '_---_', 'p': '•--•_',
+//     'q': '--•-_', 'r': '_•-•_', 's': '_•••_', 't': '__-__',
+//     'u': '_••-_', 'v': '•••-_', 'w': '_•--_', 'x': '-••-_',
+//     'y': '-•--_', 'z': '--••_', ' ': '__/__',
+//     '1': '•----', '2': '••---', '3': '•••--', '4': '••••-',
+//     '5': '•••••', '6': '-••••', '7': '--•••', '8': '---••',
+//     '9': '----•', '0': '-----',
+// }
+
+// Clean
+var alphabetMorse = {
+    'a': '•-', 'b': '-•••', 'c': '-•-•', 'd': '-••',
+    'e': '•', 'f': '••-•', 'g': '--•', 'h': '••••',
+    'i': '••', 'j': '•---', 'k': '-•-', 'l': '•-••',
+    'm': '--', 'n': '-•', 'o': '---', 'p': '•--•',
+    'q': '--•-', 'r': '•-•', 's': '•••', 't': '-',
+    'u': '••-', 'v': '•••-', 'w': '•--', 'x': '-••-',
+    'y': '-•--', 'z': '--••', ' ': '/',
+    '1': '•----', '2': '••---', '3': '•••--', '4': '••••-',
+    '5': '•••••', '6': '-••••', '7': '--•••', '8': '---••',
+    '9': '----•', '0': '-----',
+}
+
+// Using " " to make everything 5 char 
+// var alphabetMorse = {
+//     'a': ' •-  ', 'b': '-••• ', 'c': '-•-• ', 'd': ' -•• ',
+//     'e': '  •  ', 'f': '••-• ', 'g': ' --• ', 'h': '•••• ',
+//     'i': ' ••  ', 'j': '•--- ', 'k': ' -•- ', 'l': '•-•• ',
+//     'm': ' --  ', 'n': ' -•  ', 'o': ' --- ', 'p': '•--• ',
+//     'q': '--•- ', 'r': ' •-• ', 's': ' ••• ', 't': '  -  ',
+//     'u': ' ••- ', 'v': '•••- ', 'w': ' •-- ', 'x': '-••- ',
+//     'y': '-•-- ', 'z': '--•• ', ' ': '  /  ',
+//     '1': '•----', '2': '••---', '3': '•••--', '4': '••••-',
+//     '5': '•••••', '6': '-••••', '7': '--•••', '8': '---••',
+//     '9': '----•', '0': '-----',
+// }
 
 export const styleComm = {
     "validateStyle": (command, userStatus) => hasProblem(command, userStatus) == "" ? " text-green " : " text-red ",
@@ -206,7 +252,19 @@ function man(c, u) {
             </div>
             <Show when={commandList[c.args[0]].hasOwnProperty("usage")}>
                 <p className="font-bold">Usage</p>
-                <p className={styleComm.code + " pl-2"}>{commandList[c.args[0]].usage}</p>
+                <div className="flex flex-col items-start">
+                    <For each={commandList[c.args[0]].usage} fallback={<></>}>
+                        {us => <p className={styleComm.code + " pl-2"}>{us}</p>}
+                    </For>
+                </div>
+            </Show>
+            <Show when={commandList[c.args[0]].hasOwnProperty("flags")}>
+                <p className="font-bold">Flags</p>
+                <div className="flex flex-col items-start">
+                    <For each={Object.keys(commandList[c.args[0]].flags)} fallback={<></>}>
+                        {fl => <div className="flex flex-row"><p className={styleComm.code + " pl-2 w-[3rem]"}>-{fl}</p><p>{commandList[c.args[0]].flags[fl]}</p></div>}
+                    </For>
+                </div>
             </Show>
             <Show when={commandList[c.args[0]].hasOwnProperty("description")}>
                 <p className="font-bold">Description</p>
@@ -223,6 +281,21 @@ function crt(c, u) {
 }
 
 function ls(c, u) {
+    if (c.hasOwnProperty("args") && c.args.length == 1) {
+        if (c.args[0] == "-l") {
+            return <div className="min-h-fit w-full grid grid-cols-4 gap-x-3 gap-y-0.5 grid-flow-row-dense items-start">
+                <For each={filesArr} fallback={<></>}>
+                    {(file, i) => <>
+                        <div className="min-w-fit grid grid-cols-3 items-center justify-evenly">
+                            {[...Array(3)].map((e) => <pre className="px-1 w-full flex flex-row items-center justify-center">{c.pass[i()] ? alphabetMorse[c.pass[i()]] : alphabetMorse[" "]}</pre>)}
+                        </div>
+                        <p className="min-w-fit">{file.creator}</p>
+                        <p className="min-w-fit">{file.creation}</p>
+                        <p className="min-w-fit">{file.title}</p></>}
+                </For>
+            </div>
+        }
+    }
     return <div className="min-h-fit w-full flex flex-row flex-wrap gap-4 items-start">
         <For each={filesArr} fallback={<></>}>
             {file => <p>{file.title}</p>}

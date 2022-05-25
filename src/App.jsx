@@ -10,6 +10,8 @@ import Gamezone from "./Snake/Gamezone";
 import { finalsObj } from "./utils/Finals";
 import { filesArr } from "./utils/Files";
 
+const rootPassword = "rooth"
+
 function App() {
   const [commandHistory, setCommandHistory] = createSignal([])
   const [oldCommands, setOldCommands] = createSignal([])
@@ -40,7 +42,7 @@ function App() {
 
   function passwordSubmit(event) {
     event.preventDefault()
-    if (passwordInput.value != "passwd") {
+    if (passwordInput.value != rootPassword) {
       setWrongPass(true)
       scroll()
       setTimeout(() => {
@@ -142,6 +144,11 @@ function App() {
       case "sickbug":
         if (hasProblem(command, user) == "") {
           updateFinals(command.command)
+        }
+        break
+      case "ls":
+        if (hasProblem(command, user) == "") {
+          command.pass = rootPassword
         }
         break
     }
