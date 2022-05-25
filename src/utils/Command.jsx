@@ -1,5 +1,5 @@
 import { filesArr } from "./Files"
-import { fsociety } from "./Texts"
+import { fsociety, sickBug } from "./Texts"
 
 export const commandList = {
     "help": {
@@ -82,6 +82,11 @@ export const commandList = {
     "fsociety": {
         "info": "Dont mind if i do...",
         "exec": (c, u) => <pre>{fsociety}</pre>,
+        "secret": true,
+    },
+    "sickbug": {
+        "info": "I'm not sure if it is a good idea.",
+        "exec": (c, u) => <pre>{sickBug}</pre>,
         "secret": true,
     },
     "history": {
