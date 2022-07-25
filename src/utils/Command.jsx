@@ -219,6 +219,7 @@ function echo(c, u) {
             if (filesArr[indexOfFile].perms.includes("write")) {
                 if ((filesArr[indexOfFile].perms.includes("all") || (filesArr[indexOfFile].perms.includes("root") && u().userName == "root"))) {
                     let toWrite = c.args.slice(0, indexOfRedir).join(" ")
+                    if (toWrite[0] == '"' && toWrite[toWrite.length - 1] == '"') toWrite = toWrite.substring(1, toWrite.length - 1)
                     if (filesArr[indexOfFile].title == "variables.env") {
                         if (!validateEnv(toWrite))
                             return <p>Wrong environment variable:  <span className={styleComm.code}>{toWrite}</span></p>
@@ -234,7 +235,9 @@ function echo(c, u) {
             else
                 return <p>Can not write to file <span className={styleComm.code}>{c.args[indexOfRedir + 1]}</span></p>
         }
-        return <p>{c.args.join(" ")}</p>
+        let toPrint = c.args.join(" ")
+        if (toPrint[0] == '"' && toPrint[toPrint.length - 1] == '"') toPrint = toPrint.substring(1, toPrint.length - 1)
+        return <p>{toPrint}</p>
     }
     return <p>No arguments given</p>
 }

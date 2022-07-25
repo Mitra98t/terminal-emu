@@ -39,7 +39,7 @@ const defaultFiles = [
         "content": "",
         "creation": "1982-5-4",
         "creator": "testToWrite",
-        "perms": "root write",
+        "perms": "all write",
     },
 ]
 
