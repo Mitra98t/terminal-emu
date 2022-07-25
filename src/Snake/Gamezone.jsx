@@ -1,8 +1,9 @@
 import { createEffect, createSignal, onCleanup, onMount } from "solid-js";
+import { searchEnv } from "../utils/Command"
 import Food from "./Food";
 import Snake from "./Snake";
 
-function Gamezone({ snakeCounter, setSnakeCounter }) {
+function Gamezone({ snakeCounter, setSnakeCounter, updateFinals }) {
     function getRandomCoordinates() {
         let min = 0;
         let max = 25;
@@ -59,9 +60,19 @@ function Gamezone({ snakeCounter, setSnakeCounter }) {
     }
 
     function checkIfOutOfBorders() {
-        let head = snakeDots()[snakeDots().length - 1];
-        if (head[0] >= 25 || head[1] >= 25 || head[0] < 0 || head[1] < 0) {
-            onGameOver();
+        if (searchEnv("snake") == "free") {
+            console.log(snakeDots().some(d => d[0] < 25 && d[0] > 0 && d[1] < 25 && d[1] > 0))
+            if (!snakeDots().some(d => d[0] < 25 && d[0] >= 0 && d[1] < 25 && d[1] >= 0)) {
+                // clearInterval(interval)
+                updateFinals("free snake")
+                console.log("SNAKE FREE")
+            }
+        }
+        else {
+            let head = snakeDots()[snakeDots().length - 1];
+            if (head[0] >= 25 || head[1] >= 25 || head[0] < 0 || head[1] < 0) {
+                onGameOver();
+            }
         }
     }
 

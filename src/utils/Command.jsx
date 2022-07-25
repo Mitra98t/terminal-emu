@@ -219,6 +219,10 @@ function echo(c, u) {
             if (filesArr[indexOfFile].perms.includes("write")) {
                 if ((filesArr[indexOfFile].perms.includes("all") || (filesArr[indexOfFile].perms.includes("root") && u().userName == "root"))) {
                     let toWrite = c.args.slice(0, indexOfRedir).join(" ")
+                    if (filesArr[indexOfFile].title == "variables.env") {
+                        if (!validateEnv(toWrite))
+                            return <p>Wrong environment variable:  <span className={styleComm.code}>{toWrite}</span></p>
+                    }
                     filesArr[indexOfFile].content += ((filesArr[indexOfFile].content == "" ? "" : "\n") + toWrite)
                     localStorage.setItem("Files", JSON.stringify(filesArr))
                     return <></>
@@ -233,6 +237,32 @@ function echo(c, u) {
         return <p>{c.args.join(" ")}</p>
     }
     return <p>No arguments given</p>
+}
+
+function validateEnv(env) {
+    let cleanEnv = env.replace(/\s/g, '').toLowerCase();
+    let cleanEnvArr = cleanEnv.split(":")
+    let envKey = cleanEnvArr[0]
+    let envTok = cleanEnvArr[1]
+    switch (envKey) {
+        case "snake":
+            if (envTok == "free") return true
+            return false
+
+        default:
+            return false
+    }
+}
+
+export function searchEnv(env) {
+    let localStorageFiles = JSON.parse(localStorage.getItem("Files"))
+    let varEnv = filesArr.findIndex(f => f.title == "variables.env")
+    if (varEnv == -1) return null
+    let envFile = { ...filesArr[varEnv] }
+    let contentArr = envFile.content.split(/\r?\n/)
+    let indexOfEnv = contentArr.findIndex(e => e.replace(/\s/g, '').toLowerCase().split(":")[0] == env)
+    if (indexOfEnv == -1) return ""
+    return contentArr[indexOfEnv].replace(/\s/g, '').toLowerCase().split(":")[1]
 }
 
 function exit(c, u) {

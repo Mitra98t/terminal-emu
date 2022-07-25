@@ -205,6 +205,13 @@ function App() {
     }
   })
 
+
+  createEffect(() => {
+    if (!finals()["best player"].done && snakePointCounter() >= 5)
+      updateFinals("best player");
+  })
+
+
   function tabComplete(e) {
     e.preventDefault()
     let possibles = []
@@ -316,11 +323,11 @@ function App() {
       </div>
     </div>
   </div>) : (
-    <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert rotate-180 -scale-x-1 " : "") + ' w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
+    <div class={(crt() ? "crt " : " ") + (invertColor() ? " invert rotate-180 -scale-x-1 " : "") + ' overflow-hidden w-full h-screen overflow-y-auto bg-background p-4 text-lg'}>
       {myopia() ? <div div className="w-full h-screen absolute inset-0 z-50 backdrop-blur-sm pointer-events-none" ></div > : <></>
       }
       <div
-        className="absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer"
+        className=" absolute z-[4] right-2 bottom-2 p-2 border-2 border-orange rounded-lg font-mono bg-background hover:bg-red hover:font-bold text-white hover:text-black cursor-pointer"
         onClick={resetGame}
       ><p>Reset Game</p></div>
       <div className="absolute z-[4] top-2 right-2 min-w-fit">
@@ -338,7 +345,7 @@ function App() {
           <svg className="w-auto h-full stroke-2 text-red cursor-pointer" onClick={() => setSnakeActive(false)} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           <p className="px-2">{snakePointCounter()}</p>
         </div>
-        <Gamezone snakeCounter={snakePointCounter} setSnakeCounter={setSnakePointCounter} />
+        <Gamezone snakeCounter={snakePointCounter} setSnakeCounter={setSnakePointCounter} updateFinals={updateFinals} />
       </div></Show>
       <div class='relative scrollbar-hide w-full h-full font-mono leading-5 overflow-y-scroll selection:bg-orange selection:text-black bg-background text-white border-2 border-orange rounded-2xl p-4'>
         <Show when={startupLogo()}>

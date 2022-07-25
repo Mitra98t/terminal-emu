@@ -211,7 +211,8 @@
 .final[tooltip-title]:hover:before {
   content: attr(tooltip-title);
   position: absolute;
-  bottom: -3.5rem;
+  margin-top: 1rem;
+  top: 100%;
   right: 0rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   border-width: 2px;
@@ -223,5 +224,10 @@
   color: rgb(220 223 228 / var(--tw-text-opacity));
   font-weight: 700;
   border-radius: 0.7rem;
-  padding: 0.5rem
+  padding: 0.5rem;
+  width: 10rem;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

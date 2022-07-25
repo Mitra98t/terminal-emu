@@ -14,11 +14,11 @@ const defaultFiles = [
         "perms": "root",
     },
     {
-        "title": "writes.txt",
+        "title": "variables.env",
         "content": "",
         "creation": "1982-5-4",
-        "creator": "placeholder",
-        "perms": "root write",
+        "creator": "god",
+        "perms": "all write",
     },
     {
         "title": "expenses.txt",
@@ -33,6 +33,13 @@ const defaultFiles = [
         "creation": "1982-5-4",
         "creator": "placeholder",
         "perms": "block",
+    },
+    {
+        "title": "write.txt",
+        "content": "",
+        "creation": "1982-5-4",
+        "creator": "testToWrite",
+        "perms": "root write",
     },
 ]
 
