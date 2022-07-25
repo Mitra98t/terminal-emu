@@ -15,7 +15,7 @@ const defaultFiles = [
     },
     {
         "title": "variables.env",
-        "content": "",
+        "content": "taxes:pending",
         "creation": "1982-5-4",
         "creator": "god",
         "perms": "all write",

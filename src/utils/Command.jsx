@@ -77,6 +77,12 @@ export const commandList = {
         "exec": (c, u) => <p>Nice job!</p>,
         "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
     },
+    "taxes": {
+        "info": "It's not the thing i want and it's not the thing i need.",
+        "usage": ["Try some env variables"],
+        "exec": taxes,
+        // "validation": (c, u) => u().userName == "root" ? "" : "missingPerm"
+    },
     "invert": {
         "info": "Inverts color, and something more...",
         "exec": (c, u) => <p>Are you sure?</p>,
@@ -95,6 +101,11 @@ export const commandList = {
     "sickbug": {
         "info": "I'm not sure if it is a good idea.",
         "exec": (c, u) => <pre>{sickBug}</pre>,
+        "secret": true,
+    },
+    "rooth": {
+        "info": "Shh!! it's a secret!",
+        "exec": (c, u) => <p>Better keep it a secret...</p>,
         "secret": true,
     },
     "history": {
@@ -223,8 +234,21 @@ function echo(c, u) {
                     if (filesArr[indexOfFile].title == "variables.env") {
                         if (!validateEnv(toWrite))
                             return <p>Wrong environment variable:  <span className={styleComm.code}>{toWrite}</span></p>
+                        else {
+                            let contentArr = filesArr[indexOfFile].content.split(/\r?\n/)
+                            let indexOfEnv = contentArr.findIndex(e => e.replace(/\s/g, '').toLowerCase().split(":")[0] == toWrite.split(":")[0])
+                            if (indexOfEnv == -1) {
+                                filesArr[indexOfFile].content += ((filesArr[indexOfFile].content == "" ? "" : "\n") + toWrite)
+                            }
+                            else {
+                                contentArr[indexOfEnv] = toWrite;
+                                filesArr[indexOfFile].content = contentArr.join("\n");
+                            }
+                        }
                     }
-                    filesArr[indexOfFile].content += ((filesArr[indexOfFile].content == "" ? "" : "\n") + toWrite)
+                    else {
+                        filesArr[indexOfFile].content += ((filesArr[indexOfFile].content == "" ? "" : "\n") + toWrite)
+                    }
                     localStorage.setItem("Files", JSON.stringify(filesArr))
                     return <></>
                 }
@@ -242,7 +266,7 @@ function echo(c, u) {
     return <p>No arguments given</p>
 }
 
-function validateEnv(env) {
+export function validateEnv(env) {
     let cleanEnv = env.replace(/\s/g, '').toLowerCase();
     let cleanEnvArr = cleanEnv.split(":")
     let envKey = cleanEnvArr[0]
@@ -250,6 +274,9 @@ function validateEnv(env) {
     switch (envKey) {
         case "snake":
             if (envTok == "free") return true
+            return false
+        case "taxes":
+            if (envTok == "pay" || envTok == "paid") return true
             return false
 
         default:
@@ -350,6 +377,14 @@ function cat(c, u) {
     else {
         return <p>File <span className={styleComm.code}>{c.args[0]}</span> does not exists in this directiory</p>
     }
+}
+
+function taxes(c, u) {
+    if (searchEnv("taxes") == "paid" || searchEnv("taxes") == "pay"){
+
+        return <p>Fially!</p>
+    } 
+    return <p>Please, do NOT forget to pay the taxes this time.</p>
 }
 
 function notCommand(c) {

@@ -5,7 +5,9 @@ export const finalsObj = {
     "best player": { "done": false, "secret": false },
     "invert": { "done": false, "secret": false },
     "free snake": { "done": false, "secret": false },
+    "taxes": { "done": false, "secret": false },
 
     "fsociety": { "done": false, "secret": true },
     "sickbug": { "done": false, "secret": true },
+    "rooth": { "done": false, "secret": true },
 }

@@ -1,7 +1,7 @@
 import { createEffect, createSignal, onMount, Show } from "solid-js";
 import PastCommands from "./modules/PastCommands";
 import Prompt from "./modules/Prompt";
-import { commandList, hasProblem, validateCommandRepeat } from './utils/Command'
+import { commandList, hasProblem, searchEnv, validateCommandRepeat, validateEnv } from './utils/Command'
 import { ubuntuLogo } from "./utils/Texts";
 
 import './index.css';
@@ -146,6 +146,17 @@ function App() {
           updateFinals(command.command)
         }
         break
+      case "rooth":
+        if (hasProblem(command, user) == "") {
+          updateFinals(command.command)
+        }
+        break
+      case "taxes":
+        if (hasProblem(command, user) == "") {
+          if (validateEnv(command.command + ":" + searchEnv(command.command)))
+            updateFinals(command.command)
+        }
+        break
       case "ls":
         if (hasProblem(command, user) == "") {
           command.pass = rootPassword
@@ -163,6 +174,15 @@ function App() {
     setPossiblesTabCompl([])
 
     scroll()
+  }
+
+  function updateFinals(finalToAdd) {
+    let newFinalsObj = { ...finals() }
+    if (newFinalsObj.hasOwnProperty(finalToAdd)) {
+      newFinalsObj[finalToAdd].done = true
+      localStorage.setItem("finals", JSON.stringify(newFinalsObj))
+      setFinals(newFinalsObj)
+    }
   }
 
   function commandSubmit(event) {
@@ -281,14 +301,6 @@ function App() {
     return str === null || str.match(/^ *$/) !== null;
   }
 
-  function updateFinals(finalToAdd) {
-    let newFinalsObj = { ...finals() }
-    if (newFinalsObj.hasOwnProperty(finalToAdd)) {
-      newFinalsObj[finalToAdd].done = true
-      localStorage.setItem("finals", JSON.stringify(newFinalsObj))
-      setFinals(newFinalsObj)
-    }
-  }
   function resetGame() {
     localStorage.removeItem("finals")
     localStorage.removeItem("Files")
